@@ -1,7 +1,7 @@
 # DaVinci-Resolve-Converter
 A script you can run if you have FFMPEG installed which converts all files in a folder of your choosing to a codec & audio format which DaVinci Resolve Studio can read.
 
-Specifically, it converts to h.265, and .WAV. This was all vibe-coded with Gemini 2.5 Flash and GPT-OSS-20b. Here are it's features:
+Specifically, it converts to h.265, and .WAV. This was all vibe-coded with Gemini 2.5 Flash and GPT-OSS-20b. Here are its features:
 
 - It automatically detects the quality of the clip and matches it for you. No need need to adjust any settings!
 - The files it outputs exactly match the sizes of the inputted files.
