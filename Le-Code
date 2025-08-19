@@ -6,8 +6,7 @@
 SRC="/Your/Input/Folder/Path/Here"
 DST="/Your/Output/Folder/Path/Here"
 
-mkdir -p "$DST"
-shopt -s nullglob
+mkdir -p -- "$DST"
 
 # ------------------------------------------------------------------
 #  ASK USER ABOUT ERROR LOG
@@ -21,7 +20,8 @@ esac
 # ------------------------------------------------------------------
 #  PRE‑COMPUTE LIST OF FILES AND COUNTERS
 # ------------------------------------------------------------------
-files=( "$SRC"/*.MP4 )
+# Use find – it is safe with spaces, tabs, newlines etc.
+mapfile -t files < <(find "$SRC" -maxdepth 1 -type f -iname '*.mp4')
 total=${#files[@]}
 done_count=0
 
@@ -36,8 +36,9 @@ for infile in "${files[@]}"; do
     echo -e "\n[$done_count/$total] Processing: $infile"
     echo "         Outputting to: $outfile"
 
-    [[ -e "$outfile" ]] && { echo "  → Skipped (already exists)"; continue; }
+    [[ -f "$outfile" ]] && { echo "  → Skipped (already exists)"; continue; }
 
+    # Grab original bit‑rates
     vid_bps=$(ffprobe -v error -select_streams v:0 \
         -show_entries stream=bit_rate -of default=noprint_wrappers=1:nokey=1 "$infile")
     aud_bps=$(ffprobe -v error -select_streams a:0 \
@@ -54,7 +55,7 @@ for infile in "${files[@]}"; do
       -stats \
       "$outfile" 2> >(tee -a "$LOGFILE")
 
-    if [ $? -eq 0 ]; then
+    if [[ $? -eq 0 ]]; then
         echo "✅ Successfully transcoded."
     else
         echo "⚠️  Transcoding failed. Check the log at $LOGFILE"
